@@ -1,5 +1,7 @@
 # Mercury Marketplace
 
+> With No Intentional Vulns Present in the Code.
+
 A production-quality online marketplace platform built with FastAPI + React.
 
 ## Features
