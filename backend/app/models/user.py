@@ -21,6 +21,7 @@ class User(Base):
     full_name = Column(String(255), nullable=True)
     bio = Column(Text, nullable=True)
     role = Column(Enum(UserRole), default=UserRole.buyer, nullable=False)
+    profile_picture_url = Column(String(500), nullable=True)
     is_active = Column(Boolean, default=True, nullable=False)
     is_verified = Column(Boolean, default=True, nullable=False)
     is_frozen = Column(Boolean, default=False, nullable=False)
@@ -30,7 +31,8 @@ class User(Base):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
 
     wallet = relationship("Wallet", back_populates="user", uselist=False, cascade="all, delete-orphan")
-    products = relationship("Product", back_populates="seller", foreign_keys="Product.seller_id")
+    products = relationship("Product", back_populates="seller", foreign_keys="[Product.seller_id]")
+    drive_files = relationship("DriveFile", back_populates="seller", cascade="all, delete-orphan")
     purchases = relationship("Order", back_populates="buyer", foreign_keys="Order.buyer_id")
     disputes_as_buyer = relationship("Dispute", back_populates="buyer", foreign_keys="Dispute.buyer_id")
     disputes_as_seller = relationship("Dispute", back_populates="seller", foreign_keys="Dispute.seller_id")

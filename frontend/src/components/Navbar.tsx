@@ -32,7 +32,10 @@ export function Navbar() {
               <Link to="/orders" className="nav-link">Orders</Link>
               <Link to="/disputes" className="nav-link">Disputes</Link>
               {(user.role === "seller" || user.role === "admin") && (
-                <Link to="/seller" className="nav-link">Seller</Link>
+                <>
+                  <Link to="/seller" className="nav-link">Seller</Link>
+                  <Link to="/seller/drive" className="nav-link">Drive</Link>
+                </>
               )}
               {user.role === "admin" && (
                 <Link to="/admin" className="nav-link nav-link-admin">Admin</Link>

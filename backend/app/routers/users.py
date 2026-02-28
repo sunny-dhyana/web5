@@ -25,6 +25,8 @@ async def update_profile(
         current_user.full_name = body.full_name
     if body.bio is not None:
         current_user.bio = body.bio
+    if body.profile_picture_url is not None:
+        current_user.profile_picture_url = body.profile_picture_url
 
     db.commit()
     db.refresh(current_user)

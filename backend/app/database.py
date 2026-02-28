@@ -47,5 +47,5 @@ def get_db():
 
 
 def init_db():
-    from app.models import user, product, order, wallet, escrow, dispute, payout, refund, audit  # noqa: F401
+    from app.models import user, product, order, wallet, escrow, dispute, payout, refund, audit, drive  # noqa: F401
     Base.metadata.create_all(bind=engine)

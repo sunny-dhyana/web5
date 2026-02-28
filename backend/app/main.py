@@ -9,7 +9,7 @@ from fastapi.staticfiles import StaticFiles
 
 from app.config import settings
 from app.database import init_db
-from app.routers import admin, auth, disputes, orders, payouts, products, users, wallet
+from app.routers import admin, auth, disputes, orders, payouts, products, users, wallet, drive
 
 logging.basicConfig(
     level=logging.INFO,
@@ -53,6 +53,7 @@ app.include_router(wallet.router, prefix="/api/wallet", tags=["Wallet"])
 app.include_router(disputes.router, prefix="/api/disputes", tags=["Disputes"])
 app.include_router(payouts.router, prefix="/api/payouts", tags=["Payouts"])
 app.include_router(admin.router, prefix="/api/admin", tags=["Admin"])
+app.include_router(drive.router, prefix="/api/drive", tags=["Drive"])
 
 FRONTEND_DIR = settings.frontend_build_dir
 FRONTEND_ASSETS = os.path.join(FRONTEND_DIR, "assets")

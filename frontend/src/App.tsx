@@ -19,6 +19,7 @@ import { Profile } from "./pages/Profile";
 import { Register } from "./pages/Register";
 import { ResetPassword } from "./pages/ResetPassword";
 import { SellerDashboard } from "./pages/SellerDashboard";
+import { SellerDrive } from "./pages/SellerDrive";
 import { WalletDashboard } from "./pages/WalletDashboard";
 
 export default function App() {
@@ -48,6 +49,7 @@ export default function App() {
 
               {/* Seller */}
               <Route path="/seller" element={<ProtectedRoute requiredRole="seller"><SellerDashboard /></ProtectedRoute>} />
+              <Route path="/seller/drive" element={<ProtectedRoute requiredRole="seller"><SellerDrive /></ProtectedRoute>} />
               <Route path="/seller/new-product" element={<ProtectedRoute requiredRole="seller"><NewProduct /></ProtectedRoute>} />
               <Route path="/seller/products/:id/edit" element={<ProtectedRoute requiredRole="seller"><NewProduct /></ProtectedRoute>} />
 

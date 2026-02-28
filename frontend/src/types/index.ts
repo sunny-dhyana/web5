@@ -6,6 +6,7 @@ export interface User {
   username: string;
   full_name: string | null;
   bio: string | null;
+  profile_picture_url: string | null;
   role: UserRole;
   is_active: boolean;
   is_verified: boolean;
@@ -155,4 +156,13 @@ export interface CartItem {
 
 export interface ApiError {
   detail: string;
+}
+
+export interface DriveFile {
+  id: number;
+  seller_id: number;
+  file_name: string;
+  content_type: string | null;
+  size: number;
+  created_at: string;
 }

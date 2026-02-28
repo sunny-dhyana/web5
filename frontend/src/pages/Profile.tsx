@@ -4,7 +4,7 @@ import { useAuth } from "../contexts/AuthContext";
 
 export function Profile() {
   const { user, refreshUser } = useAuth();
-  const [form, setForm] = useState({ full_name: user?.full_name || "", bio: user?.bio || "" });
+  const [form, setForm] = useState({ full_name: user?.full_name || "", bio: user?.bio || "", profile_picture_url: user?.profile_picture_url || "" });
   const [pwForm, setPwForm] = useState({ current_password: "", new_password: "" });
   const [profileMsg, setProfileMsg] = useState("");
   const [profileErr, setProfileErr] = useState("");
@@ -53,7 +53,13 @@ export function Profile() {
 
       <div className="profile-layout">
         <div className="profile-card">
-          <div className="profile-avatar">{user.username.charAt(0).toUpperCase()}</div>
+          <div className="profile-avatar">
+            {user.profile_picture_url ? (
+              <img src={user.profile_picture_url} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
+            ) : (
+              user.username.charAt(0).toUpperCase()
+            )}
+          </div>
           <div className="profile-identity">
             <h2>{user.full_name || user.username}</h2>
             <p className="text-muted">@{user.username}</p>
@@ -80,6 +86,10 @@ export function Profile() {
               <div className="form-group">
                 <label className="form-label">Bio</label>
                 <textarea className="form-input form-textarea" rows={3} value={form.bio} onChange={(e) => setForm((f) => ({ ...f, bio: e.target.value }))} placeholder="Tell others about yourself…" />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Profile Picture URL</label>
+                <input type="url" className="form-input" value={form.profile_picture_url} onChange={(e) => setForm((f) => ({ ...f, profile_picture_url: e.target.value }))} placeholder="https://example.com/avatar.png" />
               </div>
               <button type="submit" className="btn btn-primary" disabled={saving}>{saving ? "Saving…" : "Save Changes"}</button>
             </form>
