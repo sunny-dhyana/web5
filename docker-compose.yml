@@ -1,0 +1,25 @@
+services:
+  mercury:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8005:8005"
+    volumes:
+      - mercury_data:/data
+    environment:
+      - DATABASE_URL=sqlite:////data/mercury.db
+      - SECRET_KEY=mercury-docker-secret-change-in-production-use-256-bits-random
+      - DEBUG=false
+      - FRONTEND_BUILD_DIR=./frontend/dist
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8005/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+
+volumes:
+  mercury_data:
+    driver: local

@@ -1,0 +1,40 @@
+# Version control
+.git
+.gitignore
+
+# Frontend development artifacts
+frontend/node_modules
+frontend/dist
+frontend/.vite
+
+# Python artifacts
+backend/__pycache__
+backend/**/__pycache__
+backend/**/*.pyc
+backend/**/*.pyo
+backend/.venv
+backend/venv
+backend/.env
+backend/data/
+
+# Development data
+data/
+*.db
+*.sqlite3
+
+# Logs
+*.log
+logs/
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+docker-compose.override.yml
