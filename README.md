@@ -1,6 +1,6 @@
 # Mercury Marketplace
 
----
+## Branches
 
 - main branch - Clean base code with no vulns
 
