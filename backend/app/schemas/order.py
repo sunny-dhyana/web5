@@ -7,7 +7,7 @@ from app.models.order import OrderStatus
 
 class OrderItemCreate(BaseModel):
     product_id: int
-    quantity: int = Field(..., gt=0, le=1000)
+    quantity: int = Field(..., le=1000)
 
 
 class OrderCreate(BaseModel):
@@ -37,6 +37,7 @@ class OrderResponse(BaseModel):
     shipping_address: Optional[str]
     tracking_number: Optional[str]
     notes: Optional[str]
+    seller_message: Optional[str] = None
     created_at: datetime
     updated_at: datetime
     items: List[OrderItemResponse] = []

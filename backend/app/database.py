@@ -48,4 +48,11 @@ def get_db():
 
 def init_db():
     from app.models import user, product, order, wallet, escrow, dispute, payout, refund, audit, drive  # noqa: F401
+    from sqlalchemy import text as _text
     Base.metadata.create_all(bind=engine)
+    with engine.connect() as _conn:
+        try:
+            _conn.execute(_text("ALTER TABLE products ADD COLUMN thank_you_message VARCHAR(2000)"))
+            _conn.commit()
+        except Exception:
+            pass

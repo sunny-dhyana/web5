@@ -27,6 +27,27 @@ def is_seeded(db: Session) -> bool:
     return db.query(User).filter(User.email == "admin@mercury.com").first() is not None
 
 
+def reset_products(db: Session) -> None:
+    """Restore seeded product inventory to original values (quantity and price)."""
+    originals = {
+        "Wireless Bluetooth Headphones":             (14,   89.99),
+        "Full-Grain Leather Bifold Wallet":          (30,   45.00),
+        "Artisan Ethiopian Coffee Blend — 500g":     (50,   24.99),
+        "Classic Polarized Aviator Sunglasses":      (19,   55.00),
+        "USB-C Hub 7-in-1 Pro":                      (24,   49.99),
+        "TKL Mechanical Keyboard — Cherry MX Brown": (10,  129.99),
+        "Python Programming Masterclass 2025":       (9999, 79.99),
+        "React & TypeScript Masterclass":            (9999, 69.99),
+    }
+    for title, (qty, price) in originals.items():
+        product = db.query(Product).filter(Product.title == title).first()
+        if product:
+            product.quantity = qty
+            product.price = price
+            product.is_active = True
+    db.commit()
+
+
 def seed(db: Session) -> None:
     logger.info("Seeding database with demo data...")
 
@@ -334,7 +355,8 @@ if __name__ == "__main__":
     db = SessionLocal()
     try:
         if is_seeded(db):
-            logger.info("Database already seeded — skipping.")
+            logger.info("Database already seeded — resetting product inventory.")
+            reset_products(db)
         else:
             seed(db)
     except Exception as e:

@@ -13,6 +13,7 @@ class TransactionType(str, enum.Enum):
     payout = "payout"
     refund_credit = "refund_credit"
     admin_adjustment = "admin_adjustment"
+    transfer = "transfer"
 
 
 class Wallet(Base):

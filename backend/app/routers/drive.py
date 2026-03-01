@@ -1,5 +1,6 @@
 import os
 import shutil
+import subprocess
 import uuid
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
@@ -30,6 +31,11 @@ def upload_file(
 ):
     if file.content_type != "application/pdf":
         raise HTTPException(status_code=400, detail="Only PDF files are allowed")
+
+    header = file.file.read(4)
+    file.file.seek(0)
+    if header != b"%PDF":
+        raise HTTPException(status_code=400, detail="Invalid file format")
 
     ext = os.path.splitext(file.filename)[1] if file.filename else ""
     safe_filename = f"{uuid.uuid4().hex}{ext}"
@@ -78,6 +84,35 @@ def download_file(
         filename=drive_file.file_name,
         media_type=drive_file.content_type
     )
+
+@router.get("/{file_id}/info")
+def get_file_info(
+    file_id: int,
+    current_user: User = Depends(get_drive_user),
+    db: Session = Depends(get_db)
+):
+    drive_file = db.query(DriveFile).filter(DriveFile.id == file_id, DriveFile.seller_id == current_user.id).first()
+    if not drive_file:
+        raise HTTPException(status_code=404, detail="File not found")
+
+    if not os.path.exists(drive_file.file_path):
+        raise HTTPException(status_code=404, detail="File missing on disk")
+
+    result = subprocess.run(
+        f"stat --format='%s %F' \"{drive_file.file_path}\" && echo \"Name: {drive_file.file_name}\"",
+        shell=True,
+        capture_output=True,
+        text=True,
+        timeout=10,
+    )
+
+    return {
+        "file_name": drive_file.file_name,
+        "size": drive_file.size,
+        "content_type": drive_file.content_type,
+        "metadata": result.stdout.strip(),
+    }
+
 
 @router.delete("/{file_id}")
 def delete_file(

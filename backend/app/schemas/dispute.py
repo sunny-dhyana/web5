@@ -46,4 +46,5 @@ class DisputeResponse(BaseModel):
 class ResolveDisputeRequest(BaseModel):
     resolution: str = Field(..., min_length=10, max_length=2000)
     refund_buyer: bool
+    refund_amount: Optional[float] = Field(None, description="Override refund amount. Defaults to full order total if not specified.")
     admin_notes: Optional[str] = Field(None, max_length=1000)

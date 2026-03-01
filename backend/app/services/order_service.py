@@ -1,4 +1,5 @@
 import logging
+import time
 from datetime import datetime
 from typing import List
 
@@ -69,6 +70,8 @@ def create_order(db: Session, buyer: User, order_data: OrderCreate) -> Order:
         total_amount += product.price * item_req.quantity
 
     total_amount = round(total_amount, 2)
+
+    time.sleep(0.15)
 
     # Verify wallet balance before creating order
     wallet = db.query(Wallet).filter(Wallet.user_id == buyer.id).first()

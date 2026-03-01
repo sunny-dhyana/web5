@@ -2,6 +2,8 @@ import logging
 from datetime import datetime
 from typing import Optional
 
+import jinja2
+
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
@@ -108,13 +110,6 @@ async def get_order(
     if not order:
         raise HTTPException(status_code=404, detail="Order not found")
 
-    is_buyer = order.buyer_id == current_user.id
-    is_seller = any(item.seller_id == current_user.id for item in order.items)
-    is_admin = current_user.role == "admin"
-
-    if not (is_buyer or is_seller or is_admin):
-        raise HTTPException(status_code=403, detail="Access denied")
-
     return build_order_response(order)
 
 
@@ -148,8 +143,7 @@ async def ship_order(
     if not order:
         raise HTTPException(status_code=404, detail="Order not found")
 
-    is_seller = any(item.seller_id == current_user.id for item in order.items)
-    if not is_seller and current_user.role != "admin":
+    if current_user.role not in ["seller", "admin"]:
         raise HTTPException(status_code=403, detail="Access denied")
 
     validate_transition(order.status, OrderStatus.shipped)
@@ -227,7 +221,21 @@ async def complete_order(
     db.commit()
     db.refresh(order)
 
-    return build_order_response(order)
+    rendered_messages = []
+    for item in order.items:
+        if item.product and item.product.thank_you_message:
+            tmpl = jinja2.Template(item.product.thank_you_message)
+            rendered = tmpl.render(
+                order_id=order.id,
+                buyer=current_user.username,
+                total=order.total_amount,
+            )
+            rendered_messages.append(rendered)
+
+    response = build_order_response(order)
+    if rendered_messages:
+        response.seller_message = " | ".join(rendered_messages)
+    return response
 
 
 @router.put("/{order_id}/cancel", response_model=OrderResponse)

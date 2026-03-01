@@ -19,7 +19,7 @@ class OrderStatus(str, enum.Enum):
 VALID_TRANSITIONS: dict[str, set[str]] = {
     OrderStatus.pending_payment: {OrderStatus.paid, OrderStatus.cancelled},
     OrderStatus.paid: {OrderStatus.shipped, OrderStatus.cancelled, OrderStatus.disputed, OrderStatus.refunded},
-    OrderStatus.shipped: {OrderStatus.delivered, OrderStatus.disputed},
+    OrderStatus.shipped: {OrderStatus.delivered, OrderStatus.disputed, OrderStatus.cancelled},
     OrderStatus.delivered: {OrderStatus.completed, OrderStatus.disputed},
     OrderStatus.completed: set(),
     OrderStatus.cancelled: set(),

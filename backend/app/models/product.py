@@ -22,6 +22,7 @@ class Product(Base):
     product_type = Column(Enum(ProductType), default=ProductType.shippable, nullable=False)
     category = Column(String(100), nullable=True, index=True)
     image_url = Column(String(2000), nullable=True)
+    thank_you_message = Column(String(2000), nullable=True)
     is_active = Column(Boolean, default=True, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)

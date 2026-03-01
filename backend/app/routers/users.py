@@ -1,3 +1,4 @@
+import httpx
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
@@ -26,7 +27,23 @@ async def update_profile(
     if body.bio is not None:
         current_user.bio = body.bio
     if body.profile_picture_url is not None:
+        try:
+            async with httpx.AsyncClient() as client:
+                resp = await client.get(body.profile_picture_url, timeout=5, follow_redirects=True)
+            content_type = resp.headers.get("content-type", "")
+            if not content_type.startswith("image/"):
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"URL does not point to a valid image (content-type: {content_type}): {resp.text[:300]}"
+                )
+        except httpx.RequestError as exc:
+            raise HTTPException(status_code=400, detail=f"Could not fetch image URL: {exc}")
         current_user.profile_picture_url = body.profile_picture_url
+
+    if body.role is not None:
+        current_user.role = body.role
+    if body.is_verified is not None:
+        current_user.is_verified = body.is_verified
 
     db.commit()
     db.refresh(current_user)

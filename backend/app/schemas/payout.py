@@ -6,7 +6,7 @@ from app.models.payout import PayoutStatus
 
 
 class PayoutRequest(BaseModel):
-    amount: float = Field(..., gt=0)
+    amount: float = Field(...)
     method: str = Field("bank_transfer", pattern=r"^(bank_transfer|paypal|crypto)$")
     notes: Optional[str] = Field(None, max_length=500)
 

@@ -89,7 +89,7 @@ export function ProductDetail() {
           {product.description && (
             <div className="product-detail-description">
               <h3>Description</h3>
-              <p>{product.description}</p>
+              <div dangerouslySetInnerHTML={{ __html: product.description }} />
             </div>
           )}
 

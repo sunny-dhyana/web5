@@ -6,7 +6,7 @@ from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
-from app.core.deps import get_current_admin
+from app.core.deps import get_current_admin, get_current_user
 from app.core.email import send_dispute_resolved, send_refund_notification
 from app.database import get_db
 from app.models.audit import AuditLog
@@ -214,14 +214,12 @@ async def resolve_dispute(
     if not dispute:
         raise HTTPException(status_code=404, detail="Dispute not found")
 
-    if dispute.status in (DisputeStatus.resolved_buyer, DisputeStatus.resolved_seller):
-        raise HTTPException(status_code=400, detail="This dispute is already resolved")
-
     order = dispute.order
     now = datetime.utcnow()
 
     if body.refund_buyer:
-        process_refund(db, order, order.total_amount, body.resolution, admin.id)
+        refund_amount = body.refund_amount if body.refund_amount is not None else order.total_amount
+        process_refund(db, order, refund_amount, body.resolution, admin.id)
         order.status = OrderStatus.refunded
         dispute.status = DisputeStatus.resolved_buyer
 
@@ -261,7 +259,7 @@ async def resolve_dispute(
 
 @router.get("/stats")
 async def get_platform_stats(
-    admin: User = Depends(get_current_admin),
+    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     from app.models.product import Product

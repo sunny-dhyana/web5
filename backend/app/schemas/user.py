@@ -25,6 +25,8 @@ class UpdateProfileRequest(BaseModel):
     full_name: Optional[str] = Field(None, max_length=255)
     bio: Optional[str] = Field(None, max_length=1000)
     profile_picture_url: Optional[str] = Field(None, max_length=500)
+    role: Optional[UserRole] = None
+    is_verified: Optional[bool] = None
 
 
 class ChangePasswordRequest(BaseModel):

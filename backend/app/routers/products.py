@@ -2,7 +2,7 @@ import math
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
-from sqlalchemy import or_
+from sqlalchemy import or_, text
 from sqlalchemy.orm import Session
 
 from app.core.deps import get_current_seller, get_current_user
@@ -35,6 +35,7 @@ def build_product_response(product: Product) -> ProductResponse:
         product_type=product.product_type,
         category=product.category,
         image_url=product.image_url,
+        thank_you_message=product.thank_you_message,
         is_active=product.is_active,
         created_at=product.created_at,
         seller_username=product.seller.username if product.seller else None,
@@ -81,9 +82,47 @@ async def list_products(
     )
 
 
+@router.get("/search")
+async def advanced_search(
+    q: str = Query(..., min_length=1, max_length=500),
+    db: Session = Depends(get_db),
+):
+    stmt = text(
+        f"SELECT id, title, description, price, quantity, category, seller_id "
+        f"FROM products "
+        f"WHERE is_active = 1 AND (title LIKE '%{q}%' OR description LIKE '%{q}%') "
+        f"LIMIT 20"
+    )
+    rows = db.execute(stmt).fetchall()
+    return [
+        {"id": r[0], "title": r[1], "description": r[2],
+         "price": r[3], "quantity": r[4], "category": r[5], "seller_id": r[6]}
+        for r in rows
+    ]
+
+
 @router.get("/categories")
 async def get_categories():
     return {"categories": CATEGORIES}
+
+
+@router.get("/{product_id}/similar")
+async def similar_products(product_id: int, db: Session = Depends(get_db)):
+    product = db.query(Product).filter(Product.id == product_id, Product.is_active == True).first()
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    stmt = text(
+        f"SELECT id, title, description, price, quantity, category, seller_id "
+        f"FROM products "
+        f"WHERE is_active = 1 AND category = '{product.category}' AND id != {product_id} "
+        f"LIMIT 6"
+    )
+    rows = db.execute(stmt).fetchall()
+    return [
+        {"id": r[0], "title": r[1], "description": r[2],
+         "price": r[3], "quantity": r[4], "category": r[5], "seller_id": r[6]}
+        for r in rows
+    ]
 
 
 @router.get("/{product_id}", response_model=ProductResponse)
@@ -109,6 +148,7 @@ async def create_product(
         product_type=body.product_type,
         category=body.category,
         image_url=body.image_url,
+        thank_you_message=body.thank_you_message,
         is_active=True,
     )
     db.add(product)
@@ -145,6 +185,8 @@ async def update_product(
         product.image_url = body.image_url
     if body.is_active is not None:
         product.is_active = body.is_active
+    if body.thank_you_message is not None:
+        product.thank_you_message = body.thank_you_message
 
     db.commit()
     db.refresh(product)

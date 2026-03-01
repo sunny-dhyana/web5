@@ -33,6 +33,13 @@ class TransactionResponse(BaseModel):
     model_config = {"from_attributes": True}
 
 
+class TransferRequest(BaseModel):
+    from_wallet_id: int = Field(..., description="Source wallet ID")
+    to_wallet_id: int = Field(..., description="Destination wallet ID")
+    amount: float = Field(..., gt=0, le=10_000)
+    note: Optional[str] = Field(None, max_length=200)
+
+
 class TransactionListResponse(BaseModel):
     items: List[TransactionResponse]
     total: int
