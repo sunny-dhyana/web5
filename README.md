@@ -1,6 +1,15 @@
 # Mercury Marketplace
 
-> With No Intentional Vulns Present in the Code.
+---
+
+- main branch - Clean base code with no vulns
+
+- **only_vulns branch - Intentional vulns present in the code.**
+> (use this branch "only_vulns" for testing against agents)
+
+- with_vulns_and_poc branch - Intentional vulns present in the code with POCs and their documentation.
+
+---
 
 A production-quality online marketplace platform built with FastAPI + React.
 
